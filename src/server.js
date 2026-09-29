@@ -1,19 +1,25 @@
-import "dotenv/config";
 import cors from "cors";
+import "dotenv/config";
 import express from "express";
-import chatBot from "./ai.js";
+
+import chatBot from "./chat.js";
+import { initialize } from "./initialize.js";
 
 const app = express();
 
 app.use(cors());
-app.use(express.text({ type: "*/*" }));
+app.use(express.json());
 
-app.post("/api/chat", chatBot);
-app.delete("/api", (_req, res) => {
-  previousInteractionId = null;
-  res.status(200).send();
-});
+app.post("/api/ask", chatBot);
 
-app.listen(8080, () => {
-  console.log("Server running on port 8080");
-});
+async function startServer() {
+  await initialize();
+
+  const port = process.env.PORT || 8080;
+
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}
+
+startServer();
